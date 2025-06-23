@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+python-dotenv
+openai
+boto3
+azure-cognitiveservices-speech
+firebase-admin
+stripe
+requests
+pydantic
