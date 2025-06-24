@@ -1,4 +1,6 @@
-from fastapi import FastAPI, HTTPException
+
+  
+   from fastapi import FastAPI, HTTPException
 from auth import verify_token
 from payments import create_payment
 from voice_api import generate_voice
@@ -15,7 +17,7 @@ def generate_video(token: str, prompt: str):
     user_data = verify_token(token)
     user_id = user_data['uid']
     
-    # First generate voice
+    # Generate voice audio
     audio_data = generate_voice(prompt)
 
     # Save the audio temporarily
@@ -23,8 +25,7 @@ def generate_video(token: str, prompt: str):
     with open(audio_file, "wb") as f:
         f.write(audio_data)
 
-    # You would actually upload this audio to cloud storage and get a URL
-    # But for now we will mock an audio URL
+    # Mock audio URL
     audio_url = "https://your-storage-service.com/path/to/audio/output_audio.mp3"
 
     # Generate avatar video
@@ -36,5 +37,5 @@ def generate_video(token: str, prompt: str):
 def payment(token: str, plan: str):
     user_data = verify_token(token)
     user_id = user_data['uid']
-    amount = create_payment(user_id, plan)
-    return {"amount_due": amount}
+    client_secret = create_payment(user_id, plan)
+    return {"client_secret": client_secret}
