@@ -1,3 +1,4 @@
+
 from fastapi import FastAPI, HTTPException, Depends
 from auth import verify_token
 from avatar_api import generate_avatar_video
