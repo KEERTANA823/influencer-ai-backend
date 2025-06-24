@@ -1,7 +1,14 @@
-auth.py
+import firebase_admin
+from firebase_admin import credentials, auth
+from fastapi import HTTPException
 
-import firebase_admin from firebase_admin import credentials, auth
+# Initialize Firebase Admin SDK
+cred = credentials.Certificate("path/to/your/firebase/credentials.json")
+firebase_admin.initialize_app(cred)
 
-cred = credentials.Certificate("firebase_key.json") firebase_admin.initialize_app(cred)
-
-def verify_token(token: str): try: decoded_token = auth.verify_id_token(token) return decoded_token except Exception as e: raise Exception("Authentication failed")
+def verify_token(token: str):
+    try:
+        decoded_token = auth.verify_id_token(token)
+        return decoded_token
+    except Exception as e:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
