@@ -1,7 +1,7 @@
-import os
 import requests
 
-HYGIENE_API_KEY = os.getenv("HYGIENE_API_KEY")
+HYGIENE_API_KEY = "YOUR_HYGIENE_API_KEY"
+AVATAR_ID = "YOUR_AVATAR_ID"
 
 def generate_avatar_video(prompt: str, audio_url: str):
     response = requests.post(
@@ -10,12 +10,10 @@ def generate_avatar_video(prompt: str, audio_url: str):
         json={
             "script": prompt,
             "voice_url": audio_url,
-            "avatar_id": "YOUR_AVATAR_ID"
+            "avatar_id": AVATAR_ID
         }
     )
-
     if response.status_code != 200:
         raise Exception("Failed to generate avatar video")
-
     data = response.json()
     return data["video_url"]
