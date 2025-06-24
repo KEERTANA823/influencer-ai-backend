@@ -1,33 +1,40 @@
-
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException
 from auth import verify_token
+from payments import create_payment
+from voice_api import generate_voice
 from avatar_api import generate_avatar_video
-from voice_api import generate_voice_audio
-from payments import handle_payment
 
 app = FastAPI()
 
 @app.get("/")
-def root():
-    return {"message": "Influencer AI Backend is running!"}
+def read_root():
+    return {"message": "Influencer AI Backend is running successfully"}
 
-@app.post("/generate")
-def generate_content(prompt: str, user_token: str = Depends(verify_token)):
-    try:
-        # Generate voice
-        audio_url = generate_voice_audio(prompt)
+@app.post("/generate_video/")
+def generate_video(token: str, prompt: str):
+    user_data = verify_token(token)
+    user_id = user_data['uid']
+    
+    # First generate voice
+    audio_data = generate_voice(prompt)
 
-        # Generate avatar video
-        video_url = generate_avatar_video(prompt, audio_url)
+    # Save the audio temporarily
+    audio_file = "output_audio.mp3"
+    with open(audio_file, "wb") as f:
+        f.write(audio_data)
 
-        return {"video_url": video_url}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    # You would actually upload this audio to cloud storage and get a URL
+    # But for now we will mock an audio URL
+    audio_url = "https://your-storage-service.com/path/to/audio/output_audio.mp3"
 
-@app.post("/payment")
-def process_payment(user_id: str, plan: str):
-    try:
-        payment_status = handle_payment(user_id, plan)
-        return {"status": payment_status}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    # Generate avatar video
+    video_url = generate_avatar_video(prompt, audio_url)
+
+    return {"video_url": video_url}
+
+@app.post("/payment/")
+def payment(token: str, plan: str):
+    user_data = verify_token(token)
+    user_id = user_data['uid']
+    amount = create_payment(user_id, plan)
+    return {"amount_due": amount}
