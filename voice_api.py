@@ -1,8 +1,8 @@
 import os
 import requests
 
-SPEECH_KEY = "YOUR_AZURE_SPEECH_KEY"
-SERVICE_REGION = "YOUR_AZURE_REGION"
+SPEECH_KEY = "ac7bba1234abcd5678efgh90ijklmn12"
+SERVICE_REGION = "centralindia"
 
 def generate_voice(text: str):
     endpoint = f"https://{SERVICE_REGION}.tts.speech.microsoft.com/cognitiveservices/v1"
