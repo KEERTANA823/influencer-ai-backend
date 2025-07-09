@@ -1,41 +1,43 @@
 
-  
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
 from auth import verify_token
 from payments import create_payment
-from voice_api import generate_voice
+from voice_api import generate_voice_audio
 from avatar_api import generate_avatar_video
 
 app = FastAPI()
 
+# Serve audio files
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 @app.get("/")
-def read_root():
+def root():
     return {"message": "Influencer AI Backend is running successfully"}
 
-@app.post("/generate_video/")
+@app.post("/generate-voice")
+def generate_voice_route(data: dict):
+    text = data.get("text")
+    if not text:
+        raise HTTPException(status_code=400, detail="No text provided")
+
+    audio_path = generate_voice_audio(text)
+    return {"audio_url": f"/{audio_path}"}
+
+@app.post("/generate_video")
 def generate_video(token: str, prompt: str):
     user_data = verify_token(token)
-    user_id = user_data['uid']
-    
-    # Generate voice audio
-    audio_data = generate_voice(prompt)
+    user_id = user_data["uid"]
 
-    # Save the audio temporarily
-    audio_file = "output_audio.mp3"
-    with open(audio_file, "wb") as f:
-        f.write(audio_data)
-
-    # Mock audio URL
-    audio_url = "https://your-storage-service.com/path/to/audio/output_audio.mp3"
+    # Generate voice
+    audio_path = generate_voice_audio(prompt)
 
     # Generate avatar video
-    video_url = generate_avatar_video(prompt, audio_url)
+    video_url = generate_avatar_video(prompt, audio_url=f"https://influencer-ai-backend-evbj.onrender.com/{audio_path}")
 
-    return {"video_url": video_url}
-
-@app.post("/payment/")
-def payment(token: str, plan: str):
-    user_data = verify_token(token)
-    user_id = user_data['uid']
-    client_secret = create_payment(user_id, plan)
-    return {"client_secret": client_secret}
+    return {
+        "user_id": user_id,
+        "prompt": prompt,
+        "audio_url": f"/{audio_path}",
+        "video_url": video_url
+    }
