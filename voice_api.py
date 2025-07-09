@@ -1,14 +1,9 @@
-
-
-from TTS.api import TTS
+import pyttsx3
 import uuid
-import os
 
 def generate_voice_audio(text):
-    tts = TTS(model_name="tts_models/en/ljspeech/tacotron2-DDC", progress_bar=False, gpu=False)
-    filename = f"static/audio_{uuid.uuid4()}.wav"
-
-    os.makedirs("static", exist_ok=True)  # Ensure 'static' folder exists
-    tts.tts_to_file(text=text, file_path=filename)
-
-    return filename  # Return the local path to the audio file
+    engine = pyttsx3.init()
+    output_path = f"output_{uuid.uuid4()}.mp3"
+    engine.save_to_file(text, output_path)
+    engine.runAndWait()
+    return output_path
