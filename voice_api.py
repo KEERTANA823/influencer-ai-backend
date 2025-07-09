@@ -1,21 +1,14 @@
-import requests
 
-SPEECH_KEY = "YOUR_AZURE_SPEECH_KEY"
-SERVICE_REGION = "YOUR_AZURE_REGION"
 
-def generate_voice(text: str):
-    url = f"https://{SERVICE_REGION}.tts.speech.microsoft.com/cognitiveservices/v1"
-    headers = {
-        "Ocp-Apim-Subscription-Key": SPEECH_KEY,
-        "Content-Type": "application/ssml+xml",
-        "X-Microsoft-OutputFormat": "audio-16khz-32kbitrate-mono-mp3"
-    }
-    ssml = f"""
-    <speak version='1.0' xml:lang='en-US'>
-        <voice xml:lang='en-US' name='en-US-AriaNeural'>{text}</voice>
-    </speak>
-    """
-    response = requests.post(url, headers=headers, data=ssml.encode("utf-8"))
-    if response.status_code != 200:
-        raise Exception("Azure TTS failed")
-    return response.content
+from TTS.api import TTS
+import uuid
+import os
+
+def generate_voice_audio(text):
+    tts = TTS(model_name="tts_models/en/ljspeech/tacotron2-DDC", progress_bar=False, gpu=False)
+    filename = f"static/audio_{uuid.uuid4()}.wav"
+
+    os.makedirs("static", exist_ok=True)  # Ensure 'static' folder exists
+    tts.tts_to_file(text=text, file_path=filename)
+
+    return filename  # Return the local path to the audio file
