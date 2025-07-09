@@ -8,3 +8,7 @@ services:
     envVars:
       - key: PORT
         value: 10000
+buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+env:
+  - key: PYTHON_VERSION
+    value: 3.8.17
