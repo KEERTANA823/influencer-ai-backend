@@ -3,4 +3,4 @@ uvicorn
 firebase-admin
 requests
 stripe
-TTS==0.10.0
+pyttsx3==2.90
